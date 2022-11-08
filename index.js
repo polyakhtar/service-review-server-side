@@ -1,4 +1,4 @@
-const { MongoClient, ServerApiVersion } = require('mongodb');
+const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 const express=require('express');
 const app=express();
 require('dotenv').config();
@@ -30,6 +30,17 @@ async function run(){
         const cursor=serviceCollection.find(query);
         const services2=await cursor.toArray();
         res.send(services2)
+    })
+    app.get('/services/:id',async(req,res)=>{
+        const id=req.params.id;
+        const query={_id:ObjectId(id)};
+        const service=await serviceCollection.findOne(query);
+        res.send(service);
+    })
+    app.post('/services',async(req,res)=>{
+        const service=req.body;
+        const result=await serviceCollection.insertOne(service);
+        res.send(service);
     })
 
     }
