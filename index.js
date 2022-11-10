@@ -15,29 +15,10 @@ app.use(express.json());
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASSWORD}@cluster0.mjqzqbo.mongodb.net/?retryWrites=true&w=majority`;
 console.log(uri)
 const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true, serverApi: ServerApiVersion.v1 });
-function veriifyJWT(req,res,next){
-    const authheader=req.headers.authorization;
-    if(!authheader){
-       return res.status(401).send({message:'unauthorized access'})
-    }
-    const token=authheader.split(' ')[1];
-    jwt.verify(token,process.env.ACCESS_TOKEN_SECRET,function(err,decoded){
-        if(err){
-          return  res.status(403).send({message:'unauthorized access'})
-        }
-        req.decoded=decoded;
-        next();
-    })
-}
 async function run(){
     try{
     const serviceCollection=client.db('weddingPhotographer').collection('services');
     const reviewCollection=client.db('weddingPhotographer').collection('reviews');
-    app.post('/jwt',(req,res)=>{
-        const user=req.body;
-        const token=jwt.sign(user,process.env.ACCESS_TOKEN_SECRET,{expiresIn:'1d'});
-        res.send({token});
-    })
     app.get('/services',async(req,res)=>{
         const query={};
         const cursor=serviceCollection.find(query).limit(3);
@@ -85,11 +66,6 @@ async function run(){
        res.send(result);
     })
     app.get('/myreviews',async(req,res)=>{
-    //     const decoded=req.decoded;
-    // console.log('inside orders api',decoded)
-    // if(decoded.user!==req.query._id){
-    //   return res.status(403).send({message:'unauthorized message'})
-    // }
         let query={};
         if(req.query.email){
             query={
