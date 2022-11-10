@@ -114,14 +114,13 @@ async function run(){
         const option={upsert:true};
         const updatedReview={
             $set:{
-                photoUrl:review.photourl,
-             customer:review.customer,
-            message:review.message,
+    photoURL:review.photoURL,
+    name:review.name,
+    message:review.message
             }
         }
         const result=await reviewCollection.updateOne(filter,updatedReview,option);
         res.send(result)
-        
     })
 
     app.delete('/myreviews/:id',async(req,res)=>{
